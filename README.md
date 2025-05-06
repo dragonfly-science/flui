@@ -3,7 +3,7 @@
 Flui is a command-line tool for **rapidly sub-typing avian influenza** viruses without doing full assemblies.
 
 * Flui **identifies the HA and NA segments** of a virus from [Nanopore][nanopore] [FASTQ][fastq] files using kmer-based methods.
-* Flui works with existing FASTQ reads, but it can also monitor a folder for incoming FASTQ files, **providing real-time updates for an ongoing sequence run**.
+* Flui works with existing FASTQ files, but it can also monitor a folder for incoming FASTQ files, **providing real-time updates for an ongoing sequence run**.
 * Flui runs in a terminal on any common platform, from your **Windows laptop to an SSH shell** on an HPC cluster.
 * Flui has an **interactive user-interface** (TUI), showing continuous progress of the analysis.
 * Flui uses a **simple, but robust metric**, to assign the subtype of the virus.
@@ -17,7 +17,6 @@ Flui is a command-line tool for **rapidly sub-typing avian influenza** viruses w
 ### Recommended -- Install via UV
 
 `flui` is a python package.
-There are many ways to install python packages, many of which are complex.
 [UV][uv] is a modern tool that simplifies the installation of python packages, and is the recommended way to install `flui`.
 
 To install `uv`, please follow the instructions from the [UV website][uv-install].
@@ -34,15 +33,16 @@ You should now be able to run `flui --help`
 
 You can install `flui` using any other traditional python methods (such as `pip`)
 If you don't want to install directly from the internet, you can also install `flui` from a zip file.
-These zip files from the [releases page](https://github.com/dragonfly-science/flui/releases).
+These zip files are available from the [releases page](https://github.com/dragonfly-science/flui/releases).
 
 ## Usage
 
-To see how to launch the UI, type `flui --help` into the terminal and press enter.
+To get help on how to launch the UI, type `flui --help` into the terminal and press enter.
 This will show the options available to you.
 The two key things to provide are:
 
-* `--run`: The path to a parent directory of the FastQ files. This should contain one or more runs, each containing multiple barcode sub-folders.
+* `--run`: The path to a parent directory of the FastQ files.
+  This should contain one or more runs, each containing multiple barcode sub-folders.
 * `--ref`: This contains the reference genomes of HA and NA segments from different subtypes.
 
 Typically, you will want to run a command like this:
@@ -65,12 +65,12 @@ Once you have downloaded these you should unzip the FastQ downloads into a folde
 flui --ref reference-ncbi.fasta --run /folder/with/fastq
 ```
 
-After a few moments, you should see the application start up and begin processing the FastQ files.
+After a few moments, you should see the application start up and begin processing any existing FastQ files.
 
 ## Navigating the Application
 
-Once you have started the application, you can navigate around using the arrow keys and tab keys.
-Detailed help about all is available inside the `flui` application.
+Once you have started the application, you can navigate using the arrow keys and tab keys.
+Detailed help is available inside the `flui` application.
 Simply press the “h” button after starting the application.
 You can also read it here: [help](src/flui/help.md).
 
@@ -81,7 +81,7 @@ The settings file must be called `flui.toml` and stored in the working directory
 Here you can set the kmer sizes, and the number of workers, and some UI colour options.
 See the GitHub repository for an [example file][config].
 Some settings can also be set on the command line (use `flui --help` to see these).
-The settings are shown in the UI (on the bottom right).
+The settings are shown in the UI on the bottom right.
 
 ## How does it work?
 
@@ -136,8 +136,8 @@ At this stage, generating releases is not automated.
 This project was developed by [Brett Calcott][brett] from [Dragonfly Data Science][dfly]
 and [Ruy Jauregai][ruy] from [Biosecurity New Zealand][mpi].
 
-Ruy managed reference development, sequence analysis, testing, and all bioinformatic guidance.
-Brett was reponsible for algorithm design and coding.
+Ruy managed reference development, sequence analysis, testing, and provided all bioinformatic guidance.
+Brett was responsible for algorithm design and coding.
 
 The project was funded by the [Biosecurity New Zealand
 -- Tiakitanga Putaiao Aotearoa][mpi].
@@ -148,7 +148,7 @@ License [Apache 2.0][apache]
 
 Copyright (c) 2024-2025 Dragonfly Data Science.
 
-[nanopore]: <https://nanoporetech.com/platform/technology>
+[nanopore]: https://nanoporetech.com/platform/technology
 [ncbi]: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide
 [sample_ref]: https://github.com/dragonfly-science/flui/blob/main/sample/reference-ncbi.fasta
 [sample_fastq]: https://www.sciencebase.gov/catalog/item/638a4df0d34ed907bf7907ea
