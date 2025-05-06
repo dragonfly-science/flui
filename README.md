@@ -1,60 +1,40 @@
 # Flui 🦆🦠🧬
 
-A text-based user interface for sub-typing avian influenza viruses using real-time [Nanopore][nanopore] reads.
+Flui is a command-line tool for **rapidly sub-typing avian influenza** viruses without doing full assemblies.
 
-![](tui.png)
+* Flui **identifies the HA and NA segments** of a virus from [Nanopore][nanopore] [FASTQ][fastq] files using kmer-based methods.
+* Flui works with existing FASTQ reads, but it can also monitor a folder for incoming FASTQ files, **providing real-time updates for an ongoing sequence run**.
+* Flui runs in a terminal on any common platform, from your **Windows laptop to an SSH shell** on an HPC cluster.
+* Flui has an **interactive user-interface** (TUI), showing continuous progress of the analysis.
+* Flui uses a **simple, but robust metric**, to assign the subtype of the virus.
+
+![A session of the interactive Flui interface](tui.png)
 
 ## Installation
 
 > :warning: If you want to *develop*, rather than simply run `flui`, then see the section below for additional installation instructions.
 
-### 1. Ensure you have access to the `flui` package
-
-The software is hosted on a private GitHub repo.
-You will need access rights to this repository to get the software.
-
-The simplest way to get access to the package is by downloading a zip file from the [releases page](https://github.com/dragonfly-science/flui/releases).
-You can also forward the zipfile to others who don't have access.
-
-Alternatively, you can install the package directly from GitHub.
-You will need to generate an SSH key that you have uploaded to GitHub.
-See instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
-
-### 2. Install UV
+### Recommended -- Install via UV
 
 `flui` is a python package.
-There are many ways to install python packages, and most of them are complex.
-[uv][uv] is a tool that simplifies the installation of python packages, and it is the recommended way to install `flui`.
+There are many ways to install python packages, many of which are complex.
+[UV][uv] is a modern tool that simplifies the installation of python packages, and is the recommended way to install `flui`.
 
-Installation on MacOS and Unix:
+To install `uv`, please follow the instructions from the [UV website][uv-install].
 
-```sh
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-For Windows:
-
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-### 3. Install the package using UV
-
-> :warning: If you are operating behind a corporate firewall, you may need to add the `--native-tls` flag to the following commands.
-
-From a downloaded zip-file release (where x.x.x is the version downloaded):
+Once you gave `uv` installed, you can install `flui` with a single command:
 
 ```sh
-uv tool install --from /path/to/zipfile/flui-x.x.x.zip flui --python 3.11
-```
-
-Directly from Github:
-
-```sh
-uv tool install --from git+ssh://git@github.com/dragonfly-science/flui.git@main flui --python 3.11
+uv tool install flui
 ```
 
 You should now be able to run `flui --help`
+
+### Alternative installation methods
+
+You can install `flui` using any other traditional python methods (such as `pip`)
+If you don't want to install directly from the internet, you can also install `flui` from a zip file.
+These zip files from the [releases page](https://github.com/dragonfly-science/flui/releases).
 
 ## Usage
 
@@ -71,9 +51,10 @@ Typically, you will want to run a command like this:
 flui --ref ref.fasta --run /path/to/fastq/files
 ```
 
-### Test driving
+## Test-driving for the impatient
 
-If you want to test drive the app:
+Flui requires FastQ files and a reference FASTA file to run.
+If you don't have access to both of these, then you try Flui out:
 
 * Download the sample reference file [here][sample_ref] (created using the [NCBI virus data][ncbi]).
 * Download sample FastQ from [this paper][sample_fastq].
@@ -84,12 +65,48 @@ Once you have downloaded these you should unzip the FastQ downloads into a folde
 flui --ref reference-ncbi.fasta --run /folder/with/fastq
 ```
 
-### Navigating the Application
+After a few moments, you should see the application start up and begin processing the FastQ files.
+
+## Navigating the Application
 
 Once you have started the application, you can navigate around using the arrow keys and tab keys.
 Detailed help about all is available inside the `flui` application.
 Simply press the “h” button after starting the application.
 You can also read it here: [help](src/flui/help.md).
+
+## Configuration
+
+The Flui app has several settings that can be changed, either at startup, or in a settings file.
+The settings file must be called `flui.toml` and stored in the working directory.
+Here you can set the kmer sizes, and the number of workers, and some UI colour options.
+See the GitHub repository for an [example file][config].
+Some settings can also be set on the command line (use `flui --help` to see these).
+The settings are shown in the UI (on the bottom right).
+
+## How does it work?
+
+Here is brief overview of Flui produces the scores for automatic sub-typing.
+
+1. The `--ref` argument given on the command-line points to a [FASTA][fasta] file.
+   This FASTA file contains the multiple reference sequences for each of the different subtypes (H1N1, H5N2, etc.).
+   These sequences have both the subtype and segment number or type in the sequence header (i.e., HA/H1N1).
+   We only use the HA and NA segments for sub-typing (others are ignored).
+2. When Flui starts, it reads the FASTA file and, for each segment/subtype combination, it generates a kmer distribution.
+   We store these distributions in memory.
+3. Flui then reads in any existing FastQ files in folder and, for each read, it produces a kmer distribution.
+   These kmer distributions are per run/barcode (we get this information from the file name).
+   As more reads come in, we update the distribution for that run/barcode.
+4. For each barcode distribution, we compare it to our set of reference distributions, and measure the *Jensen-Shannon Distance* (JSD) to each reference’s distribution.
+   (The JSD is the square root of the [Jensen-Shannon Divergence][shannon], and is a proper [distance measure][metric]).
+   The more the kmer distributions resemble each other, the lower the JSD.
+5. We transform the JSD, to make it easier to interpret.
+   First, we normalise it by dividing by the average JSD between all reference distributions.
+   Call this the JSD*N*.
+   Good matches will have JSDN values that fall below 1.0 (i.e. they are smaller than the distances between the references).
+   To make this easier to interpret, we then take the complement of this value and multiply by 100: Matching Score = (1 - JSDN) \* 100.
+6. The scores given in the UI are thus a *percentage reduction from expected kmer distribution distance*.
+   Bigger values are better.
+   Empirical tests show values of around 6.0 and above as typical for a good match.
 
 ## Development
 
@@ -114,9 +131,37 @@ just check
 
 At this stage, generating releases is not automated.
 
+## Authorship and Funding
+
+This project was developed by [Brett Calcott][brett] from [Dragonfly Data Science][dfly]
+and [Ruy Jauregai][ruy] from [Biosecurity New Zealand][mpi].
+
+Ruy managed reference development, sequence analysis, testing, and all bioinformatic guidance.
+Brett was reponsible for algorithm design and coding.
+
+The project was funded by the [Biosecurity New Zealand
+-- Tiakitanga Putaiao Aotearoa][mpi].
+
+## License and Copyright
+
+License [Apache 2.0][apache]
+
+Copyright (c) 2024-2025 Dragonfly Data Science.
+
 [nanopore]: <https://nanoporetech.com/platform/technology>
 [ncbi]: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide
 [sample_ref]: https://github.com/dragonfly-science/flui/blob/main/sample/reference-ncbi.fasta
 [sample_fastq]: https://www.sciencebase.gov/catalog/item/638a4df0d34ed907bf7907ea
 [uv]: https://docs.astral.sh/uv/
+[uv-install]: https://docs.astral.sh/uv/getting-started/installation/
 [just]: https://github.com/casey/just
+[fastq]: https://en.wikipedia.org/wiki/FASTQ_format
+[shannon]: https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence
+[metric]: https://en.wikipedia.org/wiki/Metric_space
+[fasta]: https://en.wikipedia.org/wiki/FASTA_format
+[brett]: https://github.com/brettc
+[ruy]: https://github.com/ruy-jauregui
+[mpi]: https://www.mpi.govt.nz/biosecurity/
+[dfly]: https://www.dragonfly.co.nz
+[apache]: https://www.apache.org/licenses/LICENSE-2.0
+[config]: https://github.com/dragonfly-science/flui/blob/main/flui.toml

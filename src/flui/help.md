@@ -16,7 +16,7 @@ There are two ways that the app discovers FastQ files to process. When you start
 
 1. **Pre-existing FastQ Files**: Any FASTQ files in sub-folders (however deep) that match the Nanopore naming conventions. These will be processed in random order.
 2. **Incoming FastQ Files**: While the application is running,
-	 the app will monitor any subfolders for new FASTQ files that are placed there (by the Nanopore software as it processes the reads). These will be processed in the order they arrive.
+  the app will monitor any subfolders for new FASTQ files that are placed there (by the Nanopore software as it processes the reads). These will be processed in the order they arrive.
 
 Each time a new FASTQ file for a particular barcode is processed, the scores and reads for that barcode are updated. This happens in the background, so the effect may not be immediately seen.
 
@@ -60,6 +60,5 @@ This is how we produce the scores and automatic sub-typing.
 5. We transform this measure, to make it easier to interpret. First, we normalise it by dividing by the average JSD between all reference distributions. Call this the JSD*N*. Good matches will have JSDN values that fall below 1.0 (i.e. they are smaller than the distances between the references). To make this easier to interpret, we then take the complement of this value and multiply by 100: Matching Score = (1 - JSDN) \* 100.
 6. So, this matching score is a _percentage reduction from expected kmer distribution distance_. Bigger values are better. Empirical tests show values of around six and above as typical for a good match.
 
-[1]:	https://github.com/dragonfly-science/flui/blob/main/flui.toml
-[2]:	https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence
-[3]:	https://en.wikipedia.org/wiki/Metric_space
+[1]: https://github.com/dragonfly-science/flui/blob/main/flui.toml
+
