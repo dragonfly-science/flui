@@ -146,7 +146,7 @@ The project was funded by the [Biosecurity New Zealand
 
 License [Apache 2.0][apache]
 
-Copyright (c) 2024-2025 Dragonfly Data Science.
+Copyright (c) 2024–2025 Dragonfly Data Science, Wellington, New Zealand.
 
 [nanopore]: https://nanoporetech.com/platform/technology
 [ncbi]: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide
