@@ -134,7 +134,7 @@ At this stage, generating releases is not automated.
 ## Authorship and Funding
 
 This project was developed by [Brett Calcott][brett] from [Dragonfly Data Science][dfly]
-and [Ruy Jauregai][ruy] from [Biosecurity New Zealand][mpi].
+and [Ruy Jauregui][ruy] from [Biosecurity New Zealand][mpi].
 
 Ruy managed reference development, sequence analysis, testing, and provided all bioinformatic guidance.
 Brett was responsible for algorithm design and coding.
