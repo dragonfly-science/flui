@@ -53,11 +53,13 @@ flui --ref ref.fasta --run /path/to/fastq/files
 
 ## Test-driving for the impatient
 
-Flui requires FastQ files and a reference FASTA file to run.
-If you don't have access to both of these, then you try Flui out:
+Flui requires FastQ files from a Nanopore run, and a reference FASTA file.
+If you don't have access to both of these, then you can try Flui out this way:
 
 * Download the sample reference file [here][sample_ref] (created using the [NCBI virus data][ncbi]).
-* Download sample FastQ from [this paper][sample_fastq].
+* Download sample FastQ files for Avian Flu from [this paper][sample_fastq].
+  See the attached files section, and choose one or more of the zip files.
+  Unzip the FastQ files into folders.
 
 Once you have downloaded these you should unzip the FastQ downloads into a folder and then:
 
@@ -73,6 +75,15 @@ Once you have started the application, you can navigate using the arrow keys and
 Detailed help is available inside the `flui` application.
 Simply press the “h” button after starting the application.
 You can also read it here: [help](src/flui/help.md).
+
+## Saving Results
+
+Flui saves the results of the analysis to both a CSV and a JSON file when it exits.
+It saves the current state of the analysis, including the scores and the reads.
+Note that this is saved *even if the analysis is incomplete*.
+The files are saving in the current folder with date and time suffixes to prevent overwriting any existing files.
+
+> :point_right: to avoid saving these files, start Flui with the `--no-dump` option.
 
 ## Configuration
 
