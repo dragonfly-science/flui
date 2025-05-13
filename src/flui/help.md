@@ -7,7 +7,7 @@ If the k-mer distributions match closely, the app will assign a subtype for the 
 Whether this subtype gets assigned depends on three thresholds:
 
 * There must be a minimum number of k-mers found (to avoid premature matching).
-* The matching score to particular subtype must be sufficiently enough (to ensure the match is close).
+* The matching score to particular subtype must be sufficient (to ensure the match is close).
 * The matching score must be sufficiently bigger than the next biggest match (to ensure the match is not ambiguous).
 
 ## Locating the FastQ files
@@ -20,7 +20,7 @@ There are two ways that the app discovers FastQ files to process. When you start
 
 Each time a new FASTQ file for a particular barcode is processed, the scores and reads for that barcode are updated. This update happens in the background, so the effect may not be immediately evident.
 
-## User Interface
+## User interface
 
 The interface contains five panes:
 
