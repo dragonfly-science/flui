@@ -60,7 +60,7 @@ dev-dependencies = [
 pythonVersion = "3.11"
 venvPath = "."
 venv = ".venv"
-include = ["src/**", "tests/**"]
+include = ["src/**", "tests/**", "scripts/**"]
 
 [tool.ruff]
 target-version = "py311"
@@ -224,6 +224,9 @@ split-on-trailing-comma = false
 
 # Typer only supports Optional not |
 "src/flui/cli.py" = ["UP007"]
+
+# Allow print statements in scripts (they're user-facing)
+"scripts/**/*.py" = ["T201"]
 
 [tool.ruff.format]
 quote-style = "double"

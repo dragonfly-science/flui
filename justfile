@@ -8,11 +8,11 @@ sync:
 
 # Lint all files
 lint: sync
-  uv run ruff check src tests
+  uv run ruff check src tests scripts
 
 # Typecheck all files
 typecheck: sync
-  uv run pyright src
+  uv run pyright src scripts
 
 # Run all tests
 test: sync
