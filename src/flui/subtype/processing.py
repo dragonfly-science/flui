@@ -7,6 +7,7 @@ from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
 
+from loguru import logger
 from pydantic import BaseModel, Field
 from watchfiles import Change, awatch
 
@@ -65,7 +66,9 @@ def _match_barcode(
 
 def filter_fastq(change: Change, pth_str: str):
     pth = Path(pth_str)
-    return change == Change.added and pth.is_file() and pth_str.endswith(".fastq.gz")
+    result = change == Change.added and pth.is_file() and pth_str.endswith(".fastq.gz")
+    logger.debug(f"Filter check: {change} {pth_str} -> {result}")
+    return result
 
 
 class BarcodeUpdateKind(Enum):
@@ -133,6 +136,7 @@ class BarcodeProcessor:
     def start(self):
         # Start the watch before the scan, so we don't miss anything.
         # We should automatically detect if we're doubling up on the same file.
+        logger.info(f"Starting file processor for {self.barcode_set.root}")
         self.watch_task = asyncio.create_task(self._watch())
         self.scan_task = asyncio.create_task(self._scan())
 
@@ -141,10 +145,13 @@ class BarcodeProcessor:
         while True:
             try:
                 ret = self.updates_q.get_nowait()
+                logger.info(f"Retrieved update from queue: {ret}")
             except asyncio.QueueEmpty:
                 break
             updates.append(ret)
             await asyncio.sleep(0)
+        if updates:
+            logger.info(f"Returning {len(updates)} updates to TUI")
         return updates
 
     async def _scan(self):
@@ -158,30 +165,47 @@ class BarcodeProcessor:
 
     async def _watch(self):
         """Use the watchfiles library to watch for new FastQ files."""
-        async for changes in awatch(self.barcode_set.root, watch_filter=filter_fastq):
-            if self.shutting_down:
-                break
-            for _, pth_str in changes:
-                await self._submit_new_reads(Path(pth_str))
+        logger.info(f"Starting watch on directory: {self.barcode_set.root}")
+        try:
+            async for changes in awatch(
+                self.barcode_set.root, watch_filter=filter_fastq
+            ):
+                if self.shutting_down:
+                    logger.info("Watch shutting down")
+                    break
+                logger.info(f"Watch detected {len(changes)} changes: {changes}")
+                for _, pth_str in changes:
+                    logger.info(f"Processing new file: {pth_str}")
+                    await self._submit_new_reads(Path(pth_str))
+        except Exception as e:
+            logger.error(f"Watch failed with error: {e}")
+            raise
 
     async def _submit_new_reads(self, pth: Path):
         if self.shutting_down:
+            logger.debug(f"Skipping {pth} - shutting down")
             return
 
+        logger.debug(f"Attempting to create reads from {pth}")
         reads = Reads.from_path(pth)
         if reads:
+            logger.info(f"Created reads from {pth}: count={reads.count}")
             barcode = self.barcode_set.add_reads(reads)
             if barcode:
-                await self.updates_q.put(
-                    BarcodeUpdate(
-                        kind=BarcodeUpdateKind.NEW_READS, barcode=barcode, reads=reads
-                    )
+                logger.info(f"Added reads to barcode {barcode.key}")
+                update = BarcodeUpdate(
+                    kind=BarcodeUpdateKind.NEW_READS, barcode=barcode, reads=reads
                 )
+                logger.info(f"Putting update in queue: {update}")
+                await self.updates_q.put(update)
                 # Submit them for processing.
                 future = self.read_executor.submit(_process_reads, reads)
                 self.future_reads[future] = reads
                 future.add_done_callback(self._reads_done)
-        # else:
+            else:
+                logger.warning(f"Failed to add reads to barcode set for {pth}")
+        else:
+            logger.warning(f"Failed to create reads from {pth}")
         #     await self.updates_q.put((BarcodeUpdate.NEW_READS, None))
 
     def _reads_done(self, future: Future):

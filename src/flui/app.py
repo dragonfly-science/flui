@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, ClassVar
 
+from loguru import logger
 from rich.console import RenderableType
 from rich.text import Text
 from textual import events, on
@@ -398,8 +399,12 @@ class FluiApp(App):
     async def process_updates(self):
         """Read in any of the completions from background processing."""
         updates = await self.processor.get_updates()
+        if updates:
+            logger.info(f"TUI processing {len(updates)} updates")
         for update in updates:
+            logger.info(f"TUI processing update: {update}")
             await self.barcode_view.update_barcode(update.barcode)
+            logger.info(f"Writing update to event view: {update}")
             self.event_view.write(update)
 
             if update.kind is BarcodeUpdateKind.UPDATE_MATCHES:
