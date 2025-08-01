@@ -1,6 +1,6 @@
 [project]
 name = "flui-tui"
-version = "1.2.0"
+version = "1.2.1"
 description = "TUI for real-time sub-typing of Avian Flu Viruses"
 readme = "README.md"
 authors = [{ name = "Brett Calcott", email = "brett@dragonfly.co.nz" }]
@@ -39,6 +39,23 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 # Required for hatchling to build a wheel, as we have a different project name.
 packages = ["src/flui"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "*.mp4",
+  "*.png", 
+  "fastq/",
+  ".claude/",
+  "sample/",
+  "tests/",
+  "uv.lock",
+  "justfile",
+  "taplo.toml",
+  ".markdownlint.json",
+  "flui.toml",
+  "scripts/",
+  "MANIFEST.in",
+]
 
 [project.scripts]
 flui = "flui:cli.flui_app"
