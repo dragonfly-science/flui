@@ -58,7 +58,6 @@ SegmentView {
 
 QuitScreen {
   align: center middle;
-  width: auto;
 }
 
 /* DIALOG */
@@ -67,8 +66,9 @@ QuitScreen {
   grid-gutter: 1 2;
   grid-rows: 1fr 3;
   padding: 0 1;
-  width: 50;
-  height: 11;
+  width: 40;
+  height: 9;
+  margin: 1 1;
   border: round yellow;
   background: blue;
 }
