@@ -1,5 +1,5 @@
 from datetime import datetime
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Annotated, Optional, TypeAlias, Union
 
@@ -16,7 +16,11 @@ from .dna import SegmentType, iter_reads, open_as_text
 from .settings import Settings, SettingsError, get_settings
 from .subtype import BarcodeSet, KmerIndexFlu, KmerSet
 
-VERSION = version("flui-tui")
+try:
+    VERSION = version("flui-tui")
+except PackageNotFoundError:
+    # Fallback for development mode
+    VERSION = "dev"
 
 
 # https://github.com/Textualize/rich/issues/2416#issuecomment-1193773381
@@ -40,9 +44,9 @@ def _log_formatter(record) -> str:
 
 def init_logging(debug: bool):
     logger.remove()
-    logdir = Path(platformdirs.user_log_dir("avian_flu", ensure_exists=True))
+    logdir = Path(platformdirs.user_log_dir("flui", ensure_exists=True))
     level = "DEBUG" if debug else "WARNING"
-    logger.add(logdir / "flew.log", rotation="100 MB", level=level)
+    logger.add(logdir / "flui.log", rotation="100 MB", level=level)
 
     console = Console()
     logger.add(
@@ -101,7 +105,7 @@ def ui(
     # Get the current date and time in a specific format
     now = datetime.now()
     str_now = now.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"avian_flu_barcodes_{str_now}"
+    filename = f"flui_barcodes_{str_now}"
     pth = Path() / filename
     csv_path = pth.with_suffix(".csv")
 
@@ -127,7 +131,6 @@ subtype_app = Typer(
     add_completion=False,
     no_args_is_help=True,
     rich_markup_mode="rich",
-    # help=FLEW_HELP,
 )
 
 KmerSizeOpt: TypeAlias = Annotated[int, Option(min=7, max=31)]

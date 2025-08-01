@@ -201,11 +201,15 @@ class BarcodeSet(BaseModel):
         return cls(root=root, ha_index=ha_index, na_index=na_index)
 
     def add_reads(self, reads: Reads) -> Barcode | None:
-        # Sanity checking
+        # Sanity checking - resolve symlinks for proper path comparison
         try:
-            rel_path = reads.path.relative_to(self.root)
+            resolved_root = self.root.resolve()
+            resolved_reads_path = reads.path.resolve()
+            rel_path = resolved_reads_path.relative_to(resolved_root)
         except ValueError:
-            logger.warning(f"Reads path not in run folder: `{reads.path}`")
+            logger.warning(
+                f"Reads path not in run folder: `{reads.path}` (root: {self.root})"
+            )
             return None
 
         # Update this.
@@ -296,4 +300,4 @@ class JsonSummary(BaseModel):
     @classmethod
     def from_barcode_set(cls, when: datetime, barcode: BarcodeSet) -> Self:
         where = barcode.root.as_posix()
-        return cls(where=where, when=when, flui_version=version("flui"))
+        return cls(where=where, when=when, flui_version=version("flui-tui"))
