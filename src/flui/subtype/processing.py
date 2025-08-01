@@ -166,6 +166,16 @@ class BarcodeProcessor:
     async def _watch(self):
         """Use the watchfiles library to watch for new FastQ files."""
         logger.info(f"Starting watch on directory: {self.barcode_set.root}")
+        
+        # Check if directory exists before starting watch
+        if not self.barcode_set.root.exists():
+            logger.error(f"Watch directory does not exist: {self.barcode_set.root}")
+            return
+        
+        if not self.barcode_set.root.is_dir():
+            logger.error(f"Watch path is not a directory: {self.barcode_set.root}")
+            return
+            
         try:
             async for changes in awatch(
                 self.barcode_set.root, watch_filter=filter_fastq

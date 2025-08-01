@@ -66,7 +66,7 @@ flui_app = Typer(
 )
 
 FastQDirOpt: TypeAlias = Annotated[
-    Path, Option(dir_okay=True, file_okay=False, help="FastQ folder")
+    Path, Option(exists=True, dir_okay=True, file_okay=False, help="FastQ folder")
 ]
 FastaFileOpt: TypeAlias = Annotated[
     Path,
