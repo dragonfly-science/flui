@@ -170,3 +170,4 @@ cython_debug/
 # pytest benchmark cache
 .benchmarks/
 .vscode
+CLAUDE.md
