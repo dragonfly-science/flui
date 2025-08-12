@@ -1,7 +1,7 @@
 from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Annotated, Optional, TypeAlias, Union
+from typing import Annotated, TypeAlias, Union
 
 import platformdirs
 import typer
@@ -144,7 +144,7 @@ def subtype(
     barcode: FastQDirOpt,
     ha_size: int = LOCAL_SETTINGS.ha_kmer_size,
     na_size: int = LOCAL_SETTINGS.na_kmer_size,
-    max_files: Optional[int] = None,
+    max_files: int | None = None,
 ):
     """Find the subtype for a single barcode folder."""
     ref = ref.resolve()

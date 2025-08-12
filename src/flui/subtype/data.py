@@ -248,7 +248,7 @@ class BarcodeSet(BaseModel):
     def write_csv_summary(self, path: Path):
         st = get_settings()
         sorted_barcodes = sorted(self.barcodes.values(), key=lambda b: b.key)
-        with path.open("w") as fd:
+        with path.open("w", encoding="utf-8") as fd:
             writer = csv.writer(fd)
             writer.writerow(
                 [
@@ -286,7 +286,7 @@ class BarcodeSet(BaseModel):
     def write_json_summary(self, when: datetime, path: Path):
         """Capture an overview of the barcode set."""
         j = JsonSummary.from_barcode_set(when, self)
-        with path.open("w") as f:
+        with path.open("w", encoding="utf-8") as f:
             f.write(j.model_dump_json(indent=2))
 
 

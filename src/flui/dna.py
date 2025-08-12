@@ -145,11 +145,11 @@ def open_as_text(path: Path, mode: str = "rt") -> TextIO:
         raise ValueError(msg)
     match path.suffix:
         case ".gz":
-            return cast(TextIO, gzip.open(path, mode))  # noqa: SIM115
+            return cast("TextIO", gzip.open(path, mode))
         case ".xz":
-            return cast(TextIO, lzma.open(path, mode))  # noqa: SIM115
+            return cast("TextIO", lzma.open(path, mode))
         case _:
-            return cast(TextIO, path.open(mode))
+            return cast("TextIO", path.open(mode))
 
 
 class SegmentTypeError(Exception):

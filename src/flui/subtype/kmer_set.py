@@ -78,6 +78,6 @@ class KmerSet(BaseModel):
         )
 
     def dump(self, out_path: Path):
-        with out_path.open(mode="wt") as fd:
+        with out_path.open(encoding="utf-8", mode="wt") as fd:
             for k, cnt in self.to_sorted_list():
                 fd.write(f"{k} {cnt}\n")
