@@ -47,8 +47,8 @@ RE_NZ_NAME = rf"{RE_TYPE}/{RE_HOST}/{RE_COUNTRY}/{RE_ISOLATE}/{RE_YEAR}\({RE_SUB
 # This should be an NCBI or GISAID key.
 # These should be in the format EPINNNNN or a ABNNNN.N
 # We set maximum size of 15 (currently 10).
-RE_ACCESSION = r"\s*(?P<accession>[A-Z0-9._]{0,15})\s*"
-RE_GISAID_ISOLATE = r"\s*(?P<isolate>[A-Z0-9_]{0,15})\s*"
+RE_ACCESSION = r"\s*(?P<accession>[A-Z0-9._]{0,20})\s*"
+RE_GISAID_ISOLATE = r"\s*(?P<isolate>[A-Z0-9_]{0,20})\s*"
 
 
 class FastaHeaderError(Exception):
@@ -279,6 +279,7 @@ class GISAIDHeader(FastaHeader):
     def samples(cls) -> list[str]:
         return [
             "2|PB1|EPI_ISL_131202|A/duck/Alberta/35/1976|CY009609|A/H3N",
+            "5|NP|EPI_ISL_19136018|A/gull/France/23P003123/2023|EPI3283011|A_/_H5N1",
         ]
 
     HEADER_RE: ClassVar[re.Pattern] = re.compile(
