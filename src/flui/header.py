@@ -38,9 +38,9 @@ RE_NCBI_NAME = r"\s*(?i:Influenza A virus)\s*(?P<name>[^|]+?)\s*"
 
 # The NZ names have a bunch of information we can extract.
 RE_TYPE = r"(?P<type>[A-Za-z])"
-RE_HOST = r"(?P<host>[A-Za-z]+)"
-RE_COUNTRY = r"(?P<country>[A-Za-z ]+)"  # NZL or NZ, for now.
-RE_ISOLATE = r"(?P<isolate>[A-Za-z0-9_]+)"
+RE_HOST = r"(?P<host>[A-Za-z _-]+)"
+RE_COUNTRY = r"(?P<country>[A-Za-z _-]+)"  # NZL or NZ, for now.
+RE_ISOLATE = r"(?P<isolate>[A-Za-z0-9_-]+)"
 RE_YEAR = r"(?P<year>\d{4})"
 RE_NZ_NAME = rf"{RE_TYPE}/{RE_HOST}/{RE_COUNTRY}/{RE_ISOLATE}/{RE_YEAR}\({RE_SUBTYPE}\)"
 

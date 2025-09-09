@@ -59,6 +59,19 @@ def test_subtype_parsing():
                 isolate_key="W19_10_79",
             ),
         ),
+        (
+            "8|NS|A/Brown_skua/Torgersen_island/o81-b82/2024(H5N1)",
+            NZHeader(
+                segment=SegmentType.NS,
+                name="A/Brown_skua/Torgersen_island/o81-b82/2024(H5N1)",
+                host="Brown_skua",
+                location="Torgersen_island",
+                sequence_key="o81-b82/8",
+                subtype="H5N1",
+                collection_date="2024",
+                isolate_key="o81-b82",
+            ),
+        ),
     ],
 )
 def test_nz_header(header: str, expected: NZHeader):
